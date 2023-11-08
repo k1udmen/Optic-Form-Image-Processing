@@ -1,32 +1,31 @@
-# Prerequisites
-*.d
+#include <opencv2/opencv.hpp>
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+int main() {
+    cv::VideoCapture cap("videotest.mp4");  //getting the video frame by frame
 
-# Precompiled Headers
-*.gch
-*.pch
+    if (!cap.isOpened()) {
+        std::cerr << "Error: Could not open the video file." << std::endl;
+        return -1;
+    }
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+    cv::Mat frame;
+    cv::namedWindow("Video", cv::WINDOW_NORMAL);
 
-# Fortran module files
-*.mod
-*.smod
+    while (true) {
+        cap >> frame;  // Capture a frame from the video
+        if (frame.empty()) {
+            std::cerr << "End of video." << std::endl;
+            break;
+        }
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+        cv::imshow("Video", frame);  // Display the frame
 
-# Executables
-*.exe
-*.out
-*.app
+        // Press ' ' to exit the loop
+        if (cv::waitKey(1) == 'q') {
+            break;
+        }
+    }
+
+    cv::destroyWindow("Video");
+    return 0;
+}
