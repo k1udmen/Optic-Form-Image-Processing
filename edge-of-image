@@ -1,0 +1,35 @@
+#include <opencv2/opencv.hpp>
+
+int main(){
+    //Reading the image file
+	cv::Mat inputImage = cv::imread("optical.png");	
+
+   //Grayscaling the image
+	cv::Mat grayscale;
+  cv::cvtColor(inputImage,grayscale,cv::COLOR_BGR2GRAY);
+
+   //Creating the binary image and setting pixel intensity value over 128 to white and rest are black
+	cv::Mat binaryImage;
+	cv::threshold(grayscale,binaryImage,128,155,cv::THRESH_BINARY);
+
+   //contours are found
+	std::vector<std::vector<cv::Point>> contours;
+	cv::findContours(binaryImage,contours, cv::RETR_EXTERNAL,cv::CHAIN_APPROX_SIMPLE);
+
+   //Contours with an area less than 1000 are removed from the vector
+	contours.erase(std::remove_if(contours.begin(),contours.end(),
+					[](const std::vector<cv::Point>& contour){
+					return cv::contourArea(contour)<1000;
+					}),contours.end());
+					
+	  //a copy of the image has been created with the specified color
+	cv::Mat resultImage = inputImage.clone();
+	cv::drawContours(resultImage,contours,-1 , cv::Scalar(0,255,0),2);
+
+   //image is displayed
+	cv::imshow("Result",resultImage);
+	cv::waitKey(0);
+	
+	return 0;
+
+}
